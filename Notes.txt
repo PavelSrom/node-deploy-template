@@ -1,0 +1,37 @@
+FOLDER STRUCTURE:
+
+- root (project name)
+	- client (your front-end)
+	- config (for DB credentials, JWT secret etc.)
+	- middleware (express auth middleware)
+	- models (DB models)
+	- routes (API routes)
+	- server.js / index.js
+
+1. in root folder, 'npm init -y'
+2. if your main server file is server.js, change it in package.json
+3. initialize git repo in root folder and track it
+
+
+DEPLOYMENT STEPS:
+
+1. add heroku postbuild script to server package.json:
+"heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+- that ensures React front-end is built on the server
+2. make sure there's no .gitignore and .git folder in 'client' folder - it would interfere
+3. create 'production.json' inside 'config' folder and copy everything from default.json inside it
+4. add default.json to .gitignore, as well as node_modules/
+5. make sure your server package.json has a 'start' script: "start": "node server" or "node index"
+6. add this code BELOW your API routes (oh, and don't forget to import 'path' module):
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"))
+
+  app.get("*", (req, res) => {
+    res.sendfile(path.resolve(__dirname, "client", "build", "index.html"))
+  })
+}
+
+7. add your heroku project as a remote repo or create a new one with 'heroku create' command
+8. 'git push heroku master'
+9. enjoy :)
